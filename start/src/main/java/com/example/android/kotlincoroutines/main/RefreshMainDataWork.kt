@@ -40,8 +40,17 @@ class RefreshMainDataWork(context: Context, params: WorkerParameters, private va
      * after our app has been terminated by the operating system, in which case [WorkManager] will
      * start just enough to run this [Worker].
      */
+    // Uses Dispatchers.Default. You can switch to other dispatchers by using withContext()
     override suspend fun doWork(): Result {
-        return Result.success()         // TODO: Use coroutines from WorkManager
+        val database = getDatabase(applicationContext)
+        val repository = TitleRepository(network, database.titleDao)
+
+        return try {
+            repository.refreshTitle()
+            Result.success()
+        } catch (error: TitleRefreshError) {
+            Result.failure()
+        }
     }
 
     class Factory(val network: MainNetwork = getNetworkService()) : WorkerFactory() {
