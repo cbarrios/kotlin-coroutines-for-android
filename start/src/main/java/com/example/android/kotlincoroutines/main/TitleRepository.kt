@@ -18,6 +18,7 @@ package com.example.android.kotlincoroutines.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
+import kotlinx.coroutines.withTimeout
 
 /**
  * TitleRepository provides an interface to fetch a title or request a new one be generated.
@@ -46,7 +47,9 @@ class TitleRepository(val network: MainNetwork, val titleDao: TitleDao) {
         // Refresh from network and write to database
         try {
             // Make network request using a blocking call
-            val result = network.fetchNextTitle()
+            val result = withTimeout(5_000) {
+                network.fetchNextTitle()
+            }
             titleDao.insertTitle(Title(result))
         } catch (cause: Throwable) {
             // If anything throws an exception, inform the caller

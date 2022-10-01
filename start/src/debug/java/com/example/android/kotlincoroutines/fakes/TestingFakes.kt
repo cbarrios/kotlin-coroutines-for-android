@@ -44,7 +44,7 @@ class TitleDaoFake(initialTitle: String) : TitleDao {
      * This uses a channel instead of a list to allow multiple threads to call insertTitle and
      * synchronize the results with the test thread.
      */
-    private val insertedForNext = Channel<Title>(capacity = Channel.BUFFERED)
+    private val insertedForNext = Channel<Title>(capacity = Channel.UNLIMITED)
 
     override suspend fun insertTitle(title: Title) {
         insertedForNext.trySend(title)
